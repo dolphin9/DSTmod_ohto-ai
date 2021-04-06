@@ -3,6 +3,7 @@ GLOBAL.setmetatable(env,{__index=function(t,k) return GLOBAL.rawget(GLOBAL,k) en
 PrefabFiles = {
 	"oa_colourpen", 
     "oa_penlight",
+    "oa_penlightfire",
 }
 
 Assets = {
@@ -20,7 +21,7 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.OA_COLOURPEN = "我已经怒不可遏了"  -
 
 AddRecipe("oa_colourpen",  --添加物品的配方
 {Ingredient("featherpencil", 1)},  
-RECIPETABS.WAR,  TECH.SCIENCE_ONE,  
+RECIPETABS.WAR,  TECH.SCIENCE_TWO,  
 nil, nil, nil, nil, nil,  
 "images/weapons/oa_colourpen.xml",  --贴图.xml
 "oa_colourpen.tex")  --贴图.tex
@@ -32,7 +33,7 @@ STRINGS.CHARACTERS.GENERIC.DESCRIBE.OA_PENLIGHT = "我已经怒不可遏了"
 
 AddRecipe("oa_penlight",  --添加物品的配方
 {Ingredient("lantern", 1),Ingredient("lightninggoathorn", 1)},  --材料
-RECIPETABS.WAR,  nil,  
+RECIPETABS.WAR,  TECH.SCIENCE_TWO,  
 nil, nil, nil, nil, nil, 
 "images/weapons/oa_penlight.xml",  --贴图.xml
 "oa_penlight.tex")  --贴图.tex
