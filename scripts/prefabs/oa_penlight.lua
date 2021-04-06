@@ -8,17 +8,31 @@ local prefabs = {
     "oa_openlightfire", --光照特效
 }
 
-local function onremovefire(fire)
+local function onremovefire(fire)   
     fire.oa_penlight.fire = nil
 end
 
-local function OnRemoveEntity(inst)
+local function OnRemoveEntity(inst)     
     if inst.fire ~= nil then
         inst.fire:Remove()
     end
 end
 
-local function onfuelchange(newsection, oldsection, inst)
+local function turnoff(inst)    --关灯
+    local owner = inst.components.inventoryitem ~= nil and inst.components.inventoryitem.owner or nil
+    if owner ~= nil and inst.components.equippable ~= nil and inst.components.equippable:IsEquipped() then
+
+    end
+    inst.components.fueled:StopConsuming()
+    if inst.fire ~= nil then
+        if inst.fire and inst.fire:IsValid() then
+            inst.fire:Remove()
+        end
+        inst.fire = nil
+    end
+end
+
+local function onfuelchange(newsection, oldsection, inst)   ---?
     if newsection <= 0 then
         --when we burn out
         if inst.components.burnable ~= nil then
@@ -34,7 +48,7 @@ local function onfuelchange(newsection, oldsection, inst)
                     equipslot = equippable.equipslot,
                     announce = "ANNOUNCE_TORCH_OUT",
                 }
-                inst:Remove()
+                turnoff(inst)
                 owner:PushEvent("itemranout", data)
                 return
             end
@@ -71,6 +85,21 @@ local function onunequip(inst, owner) --卸下
     owner.AnimState:Show("ARM_normal")
 end
 
+local function penlightdepleted(inst)
+    local equippable = inst.components.equippable
+    if equippable ~= nil and equippable:IsEquipped() then    
+        local owner = inst.components.inventoryitem ~= nil and inst.components.inventoryitem.owner or nil
+        if owner ~= nil then
+            local data = {
+                prefab = inst.prefab,
+                equipslot = equippable.equipslot,
+            }
+            turnoff(inst)
+            owner:PushEvent("torchranout", data)                
+        end
+    end
+    turnoff(inst)
+end    
 
 local function fn()
     local inst = CreateEntity()
@@ -95,7 +124,7 @@ local function fn()
     end
 
     inst:AddComponent("weapon")
-    inst.components.weapon:SetDamage(150)
+    inst.components.weapon:SetDamage(75)
     ---
 
     inst:AddComponent("inspectable")
@@ -114,7 +143,7 @@ local function fn()
     inst.components.fueled.fueltype = FUELTYPE.CAVE
     inst.components.fueled:SetSectionCallback(onfuelchange)
     inst.components.fueled:InitializeFuelLevel(TUNING.NIGHTSTICK_FUEL)
-    --inst.components.fueled:SetDepletedFn(inst.Remove)
+    inst.components.fueled:SetDepletedFn(penlightdepleted)
     inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
     inst.components.fueled.accepting = true
 
