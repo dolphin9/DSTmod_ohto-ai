@@ -111,10 +111,12 @@ local function fn()
     inst.components.burnable.fxprefab = nil
 
     inst:AddComponent("fueled")    
+    inst.components.fueled.fueltype = FUELTYPE.CAVE
     inst.components.fueled:SetSectionCallback(onfuelchange)
     inst.components.fueled:InitializeFuelLevel(TUNING.NIGHTSTICK_FUEL)
-    inst.components.fueled:SetDepletedFn(inst.Remove)
+    --inst.components.fueled:SetDepletedFn(inst.Remove)
     inst.components.fueled:SetFirstPeriod(TUNING.TURNON_FUELED_CONSUMPTION, TUNING.TURNON_FULL_FUELED_CONSUMPTION)
+    inst.components.fueled.accepting = true
 
     MakeHauntableLaunch(inst)
 
